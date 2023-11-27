@@ -58,6 +58,7 @@ def create_project(request):
 				user=request.user,
 				likes=0,
 				title=request.POST['title'],
+				category=ProjectCategory.objects.get(id=request.POST['category']),
 				privacy_mode={'True': True, 'False': False}[request.POST['privacy_mode']]
 			)
 			return HttpResponseRedirect('/accounts')

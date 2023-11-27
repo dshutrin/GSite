@@ -6,3 +6,8 @@ from .models import *
 @admin.register(Project)
 class AuthorAdmin(admin.ModelAdmin):
 	list_display = ('user', 'title', 'likes', 'privacy_mode')
+
+
+@admin.register(ProjectCategory)
+class AuthorAdmin(admin.ModelAdmin):
+	list_display = ('name', 'color')

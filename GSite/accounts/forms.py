@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
-from .models import Project
+from .models import *
 
 
 class LoginForm(forms.Form):
@@ -75,7 +75,8 @@ class CreateProjectForm(forms.ModelForm):
 			visible.field.widget.attrs['placeholder'] = visible.field.label
 			
 	privacy_mode = forms.ChoiceField(label='Приватность', choices=((True, "Публичный"), (False, "Приватный")))
+	category = forms.ModelChoiceField(label='Категория', queryset=ProjectCategory.objects.all())
 	
 	class Meta:
 		model = Project
-		fields = ('title', 'privacy_mode')
+		fields = ('title', 'privacy_mode', 'category')

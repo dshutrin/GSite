@@ -1,9 +1,9 @@
 {% extends "accounts/base.html" %}
 
 {% block content %}
-	<div class="container my-5">
+	<div class="container-fluid my-5">
 		<div class="row">
-			<div class="col-4">
+			<div class="col-2">
 				<h4>Мои проекты</h4>
 				<ul class="list-group">
 					<a class="list-group-item active" href="create_project">Создать</a>
@@ -13,6 +13,16 @@
 				</ul>
 			</div>
 			<div class="col-8">
+
+			</div>
+			<div class="col-2">
+				<h4>Мои статьи</h4>
+				<ul class="list-group">
+					<a class="list-group-item active" href="create_post">Создать</a>
+					{% for post in posts %}
+						<a href="posts/{{post.id}}" class="list-group-item">{{post.title}}</a>
+					{% endfor %}
+				</ul>
 			</div>
 		</div>
 	</div>

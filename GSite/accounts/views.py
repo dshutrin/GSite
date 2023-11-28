@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect
+from django.http import JsonResponse
 from django.contrib.auth import login as user_login, logout as user_logout, authenticate
 from .forms import *
 from .models import *
@@ -44,7 +45,8 @@ def register(request):
 
 def account(request):
 	return render(request, 'accounts/profile.html', {
-		'projects': Project.objects.filter(user=request.user)
+		'projects': Project.objects.filter(user=request.user),
+		'posts': Post.objects.filter(user=request.user)
 	})
 
 
@@ -66,6 +68,19 @@ def create_project(request):
 			return render(request, 'accounts/create_project.html', {'form': form})
 
 
+def create_post(request):
+	if request.method == 'GET':
+		return render(request, 'accounts/create_post.html', {'form': CreatePostForm()})
+	elif request.method == 'POST':
+		form = CreatePostForm(request.POST, request.FILES)
+		if form.is_valid():
+			post = form.save(commit=False)
+			post.user = request.user
+			post.save()
+			return HttpResponseRedirect('/accounts/')
+		return render(request, 'accounts/create_post.html', {'form': CreatePostForm(request.POST, request.FILES)})
+
+
 def project_detail(request, project_id):
 	project = Project.objects.filter(id=project_id)
 	if len(project):
@@ -77,3 +92,43 @@ def project_detail(request, project_id):
 		
 	else:
 		return HttpResponseRedirect('/accounts')
+
+
+def search_projects(request, query):
+	projects = [x.to_json() for x in Project.objects.filter(title__startswith=query)][:12]
+	if len(projects):
+		return JsonResponse({
+			'status': 'ok',
+			'projects': projects
+		})
+	else:
+		return JsonResponse({
+			'status':   'bad',
+			'projects': None
+		})
+
+
+def get_diagram_data(request):
+	cat_names = [x.name for x in ProjectCategory.objects.all()]
+	ans = {}
+	
+	for cat_name in cat_names:
+		count = Project.objects.filter(category__name=cat_name).count()
+		color = ProjectCategory.objects.filter(name=cat_name)[0].color
+		if count > 0:
+			ans.update({
+				cat_name: {'count': count, 'color': color}
+			})
+	
+	return JsonResponse(ans)
+
+
+def post_detail(request, post_id):
+	post = Post.objects.filter(id=post_id)
+	if len(post):
+		post = post[0]
+		
+		with open(post.post_file.path, 'r', encoding='utf-8') as file:
+			return render(request, 'accounts/post_detail.html', {'data': file.read()})
+	else:
+		return HttpResponseRedirect('/')

@@ -80,3 +80,17 @@ class CreateProjectForm(forms.ModelForm):
 	class Meta:
 		model = Project
 		fields = ('title', 'privacy_mode', 'category')
+
+
+class CreatePostForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for visible in self.visible_fields():
+			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
+			visible.field.widget.attrs['placeholder'] = visible.field.label
+	
+	category = forms.ModelChoiceField(label='Категория', queryset=ProjectCategory.objects.all())
+	
+	class Meta:
+		model = Post
+		fields = ('title', 'category', 'post_file')

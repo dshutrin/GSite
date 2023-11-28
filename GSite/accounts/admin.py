@@ -11,3 +11,8 @@ class AuthorAdmin(admin.ModelAdmin):
 @admin.register(ProjectCategory)
 class AuthorAdmin(admin.ModelAdmin):
 	list_display = ('name', 'color')
+
+
+@admin.register(Post)
+class AuthorAdmin(admin.ModelAdmin):
+	list_display = ('user', 'title')

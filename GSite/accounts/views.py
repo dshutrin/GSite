@@ -46,7 +46,9 @@ def register(request):
 def account(request):
 	return render(request, 'accounts/profile.html', {
 		'projects': Project.objects.filter(user=request.user),
-		'posts': Post.objects.filter(user=request.user)
+		'posts': Post.objects.filter(user=request.user),
+		'banner': get_banner(request.user),
+		'avatar': get_avatar(request.user)
 	})
 
 
@@ -127,8 +129,58 @@ def post_detail(request, post_id):
 	post = Post.objects.filter(id=post_id)
 	if len(post):
 		post = post[0]
+		post_filename = 'user_' + str(post.user.id) + '\\posts\\' + post.post_file.path.split('\\')[-1]
 		
-		with open(post.post_file.path, 'r', encoding='utf-8') as file:
-			return render(request, 'accounts/post_detail.html', {'data': file.read()})
+		return render(request, 'accounts/post_detail.html', {
+			'file_name': post_filename,
+			'post': post
+		})
 	else:
 		return HttpResponseRedirect('/')
+
+
+def settings_profile(request):
+	if request.POST:
+		form = ProfileForm(request.POST, instance=request.user)
+		if form.is_valid():
+			form.save()
+	
+	return render(request, 'accounts/settings.html', {
+		'form': ProfileForm(instance=request.user),
+		'banner': get_banner(request.user),
+		'avatar': get_avatar(request.user)
+	})
+
+
+def change_avatar(request):
+	if request.POST:
+		form = ChangeAvatarForm(request.POST, request.FILES, instance=request.user.profile)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/accounts/')
+		else:
+			return render(request, 'accounts/change_avatar.html', {
+				'avatar': get_avatar(request.user),
+				'form':   form
+			})
+	return render(request, 'accounts/change_avatar.html', {
+		'avatar': get_avatar(request.user),
+		'form': ChangeAvatarForm()
+	})
+
+
+def change_banner(request):
+	if request.POST:
+		form = ChangeBannerForm(request.POST, request.FILES, instance=request.user.profile)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/accounts/')
+		else:
+			return render(request, 'accounts/change_banner.html', {
+				'banner': get_banner(request.user),
+				'form':   form
+			})
+	return render(request, 'accounts/change_banner.html', {
+		'banner': get_banner(request.user),
+		'form': ChangeAvatarForm()
+	})

@@ -45,3 +45,9 @@ class Post(models.Model):
 	
 	def __str__(self):
 		return f'Статья: {self.title}'
+
+
+class Profile(models.Model):
+	user = models.OneToOneField(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+	avatar = models.ImageField(upload_to=get_avatar_path, verbose_name='Аватар', default=None, null=True)
+	banner = models.ImageField(upload_to=get_banner_path, verbose_name='Баннер', default=None, null=True)

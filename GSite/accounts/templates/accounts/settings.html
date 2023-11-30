@@ -1,0 +1,61 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+	<a href="/accounts/" class="btn btn-primary my-3">Назад</a>
+	<div class="row">
+		<div class="col-3">
+			<div class="card m-0 p-0">
+				<div class="card-body">
+					<form method="POST">
+						{% for f in form %}
+						<div class="form-floating mb-3">
+							{{f}}
+							<label for="{{f.id_for_label}}">{{f.label}}</label>
+							<div class="form-error">{{f.errors}}</div>
+						</div>
+						{% endfor %}
+
+						{% csrf_token %}
+						<div class="d-flex justify-content-center gap-3">
+							<button class="d-flex w-50 btn btn-outline-primary shadow justify-content-center mx-auto" type="submit">Сохранить</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-2">
+			<div class="text-center "><a href="/accounts/change_avatar" class="btn btn-primary w-100">Сменить аватар</a></div>
+			<div class="text-center mt-3"><a href="/accounts/change_banner" class="btn btn-primary w-100">Сменить баннер</a></div>
+		</div>
+		<div class="col-7">
+			<div class="container-fluid m-0 p-0 text-center">
+				<div class="row">
+					<div class="col-12">
+						{% if banner %}
+							<img src="{{banner}}"
+							     class="img-fluid rounded"
+							     style="max-height: 200px; min-width: 100%; position: relative; z-index-1;">
+						{% else %}
+							<img src="{% static 'default_banners/banner.png' %}"
+							     class="img-fluid rounded"
+							     style="max-height: 200px; min-width: 100%; position: relative; z-index-1;">
+						{% endif %}
+						{% if avatar %}
+							<img src="{{avatar}}"
+								 style="max-width: 120px; top: -25%; z-index: 2; position: relative;">
+						{% else %}
+							<img src="{% static 'default_avatars/avatar.png' %}"
+								 style="max-width: 120px; top: -25%; z-index: 2; position: relative;">
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

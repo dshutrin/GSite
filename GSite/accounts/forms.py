@@ -94,3 +94,39 @@ class CreatePostForm(forms.ModelForm):
 	class Meta:
 		model = Post
 		fields = ('title', 'category', 'post_file')
+
+
+class ProfileForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for visible in self.visible_fields():
+			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
+			visible.field.widget.attrs['placeholder'] = visible.field.label
+	
+	class Meta:
+		model = User
+		fields = ('username', 'email', 'first_name', 'last_name')
+
+
+class ChangeAvatarForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for visible in self.visible_fields():
+			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
+			visible.field.widget.attrs['placeholder'] = visible.field.label
+	
+	class Meta:
+		model = Profile
+		fields = ('avatar', )
+
+
+class ChangeBannerForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for visible in self.visible_fields():
+			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
+			visible.field.widget.attrs['placeholder'] = visible.field.label
+	
+	class Meta:
+		model = Profile
+		fields = ('banner',)

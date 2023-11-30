@@ -12,5 +12,8 @@ urlpatterns = [
 	path('get_projects/<str:query>', search_projects),
 	path('get_diagram_data', get_diagram_data),
 	path('create_post', create_post),
-	path('posts/<int:post_id>', post_detail)
+	path('posts/<int:post_id>', post_detail),
+	path('settings', settings_profile),
+	path('change_avatar', change_avatar),
+	path('change_banner', change_banner)
 ]

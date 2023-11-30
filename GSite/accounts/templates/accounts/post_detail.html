@@ -2,6 +2,13 @@
 
 {% block content %}
 	<div class="container my-5">
-		{{data|safe}}
+		<h4>Статья №{{post.id}}</h4>
+		<h5>Тема: {{post.title}}</h5>
+		<h6>Автор: {{post.user.username}}</h6>
+		<div class="card">
+			<div class="card-body m-0 p-0">
+				{% include file_name %}
+			</div>
+		</div>
 	</div>
 {% endblock %}

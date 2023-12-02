@@ -18,6 +18,10 @@ def get_banner_path(instance, filename):
 	return os.path.join("user_%d" % instance.user.id, "banners", filename)
 
 
+def get_projects_files_path(instance, filename):
+	return os.path.join("user_" + str(instance.project.user.id), "projects", str(instance.project.id), filename)
+
+
 def get_avatar(user):
 	if user.profile.avatar:
 		return f'/media/{user.profile.avatar}'

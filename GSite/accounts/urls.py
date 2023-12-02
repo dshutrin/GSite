@@ -15,5 +15,7 @@ urlpatterns = [
 	path('posts/<int:post_id>', post_detail),
 	path('settings', settings_profile),
 	path('change_avatar', change_avatar),
-	path('change_banner', change_banner)
+	path('change_banner', change_banner),
+	path('projects/<int:project_id>/add_details', add_project_file),
+	path('projects/<int:project_id>/files/<int:file_id>/delete', delete_project_file)
 ]

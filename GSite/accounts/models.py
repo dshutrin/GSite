@@ -1,7 +1,13 @@
+import os
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from .utils import *
+
+from django.conf import settings
+from django.db.models.signals import post_save, pre_save, post_delete
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -35,6 +41,12 @@ class Project(models.Model):
 		return f'{self.title} ({self.user.username})'
 
 
+class ProjectFile(models.Model):
+	project = models.ForeignKey(Project, verbose_name='Проект', on_delete=models.CASCADE)
+	name = models.CharField(max_length=255, verbose_name='Название файла', default='')
+	file = models.FileField(upload_to=get_projects_files_path, verbose_name='Файл проекта')
+
+
 class Post(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
 	title = models.CharField(max_length=150, null=False, verbose_name='Название статьи')
@@ -51,3 +63,34 @@ class Profile(models.Model):
 	user = models.OneToOneField(User, verbose_name='Пользователь', on_delete=models.CASCADE)
 	avatar = models.ImageField(upload_to=get_avatar_path, verbose_name='Аватар', default=None, null=True)
 	banner = models.ImageField(upload_to=get_banner_path, verbose_name='Баннер', default=None, null=True)
+	
+	def __str__(self):
+		avatar = self.avatar if self.avatar else False
+		banner = self.banner if self.banner else False
+		return f'AVATAR: {avatar}\nBANNER: {banner}'
+
+
+@receiver(post_delete, sender=ProjectFile)
+def delete_project_files(sender, instance, **kwargs):
+	if os.path.exists(os.path.join(settings.BASE_DIR, instance.file.path)):
+		os.remove(os.path.join(settings.BASE_DIR, instance.file.path))
+		
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+	if created:
+		profile = Profile.objects.create(user=instance)
+		instance.profile = profile
+		instance.save()
+		
+		
+@receiver(pre_save, sender=Profile)
+def manage_photos(sender, instance, **kwargs):
+	try:
+		profile = Profile.objects.get(id=instance.id)
+		if profile.banner != instance.banner:
+			os.remove(profile.banner.path)
+		if profile.avatar != instance.avatar:
+			os.remove(profile.avatar.path)
+	except:
+		pass

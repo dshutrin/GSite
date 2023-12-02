@@ -7,6 +7,14 @@ from django.contrib.auth.models import User
 from .models import *
 
 
+class BeautyForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for visible in self.visible_fields():
+			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
+			visible.field.widget.attrs['placeholder'] = visible.field.label
+
+
 class LoginForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -67,13 +75,7 @@ class RegisterForm(UserCreationForm):
 		fields = ('username', 'password1', 'password2')
 
 
-class CreateProjectForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		for visible in self.visible_fields():
-			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
-			visible.field.widget.attrs['placeholder'] = visible.field.label
-			
+class CreateProjectForm(BeautyForm):
 	privacy_mode = forms.ChoiceField(label='Приватность', choices=((True, "Публичный"), (False, "Приватный")))
 	category = forms.ModelChoiceField(label='Категория', queryset=ProjectCategory.objects.all())
 	
@@ -82,13 +84,7 @@ class CreateProjectForm(forms.ModelForm):
 		fields = ('title', 'privacy_mode', 'category')
 
 
-class CreatePostForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		for visible in self.visible_fields():
-			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
-			visible.field.widget.attrs['placeholder'] = visible.field.label
-	
+class CreatePostForm(BeautyForm):
 	category = forms.ModelChoiceField(label='Категория', queryset=ProjectCategory.objects.all())
 	
 	class Meta:
@@ -96,37 +92,25 @@ class CreatePostForm(forms.ModelForm):
 		fields = ('title', 'category', 'post_file')
 
 
-class ProfileForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		for visible in self.visible_fields():
-			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
-			visible.field.widget.attrs['placeholder'] = visible.field.label
-	
+class ProfileForm(BeautyForm):
 	class Meta:
 		model = User
 		fields = ('username', 'email', 'first_name', 'last_name')
 
 
-class ChangeAvatarForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		for visible in self.visible_fields():
-			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
-			visible.field.widget.attrs['placeholder'] = visible.field.label
-	
+class AddProjectFileForm(BeautyForm):
+	class Meta:
+		model = ProjectFile
+		fields = ('file', 'name')
+
+
+class ChangeAvatarForm(BeautyForm):
 	class Meta:
 		model = Profile
 		fields = ('avatar', )
 
 
-class ChangeBannerForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		for visible in self.visible_fields():
-			visible.field.widget.attrs['class'] = 'form-control bg-light text-dark'
-			visible.field.widget.attrs['placeholder'] = visible.field.label
-	
+class ChangeBannerForm(BeautyForm):
 	class Meta:
 		model = Profile
 		fields = ('banner',)

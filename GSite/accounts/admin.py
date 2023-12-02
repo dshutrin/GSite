@@ -16,3 +16,8 @@ class AuthorAdmin(admin.ModelAdmin):
 @admin.register(Post)
 class AuthorAdmin(admin.ModelAdmin):
 	list_display = ('user', 'title')
+
+
+@admin.register(ProjectFile)
+class AuthorAdmin(admin.ModelAdmin):
+	list_display = ('project', 'file')

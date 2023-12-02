@@ -87,9 +87,20 @@ def project_detail(request, project_id):
 	project = Project.objects.filter(id=project_id)
 	if len(project):
 		
+		class FileView:
+			def __init__(self, id_, path, name):
+				self.id = id_
+				self.path = path
+				self.name = name
+		
 		project = project[0]
 		return render(request, 'accounts/project_detail.html', {
-			'project': project
+			'project': project,
+			'files': [FileView(
+				id_=file.id,
+				name=file.name,
+				path=file.file.path
+			) for file in ProjectFile.objects.filter(project=project)]
 		})
 		
 	else:
@@ -182,5 +193,46 @@ def change_banner(request):
 			})
 	return render(request, 'accounts/change_banner.html', {
 		'banner': get_banner(request.user),
-		'form': ChangeAvatarForm()
+		'form': ChangeBannerForm()
 	})
+
+
+def add_project_file(request, project_id):
+	if request.method == 'GET':
+		project = Project.objects.filter(id=project_id)
+		if len(project):
+			project = project[0]
+			return render(request, 'accounts/add_project_detail.html', {
+				'form': AddProjectFileForm(),
+				'project': project
+			})
+		else:
+			return HttpResponseRedirect('/')
+	elif request.method == 'POST':
+		project = Project.objects.filter(id=project_id)
+		if len(project):
+			project = project[0]
+			file = ProjectFile.objects.create(
+				project=project
+			)
+			form = AddProjectFileForm(request.POST, request.FILES)
+			pre_saved_file = form.save(commit=False)
+			
+			file.file = pre_saved_file.file
+			file.name = pre_saved_file.name
+			file.save()
+			
+			return HttpResponseRedirect(f'/accounts/projects/{project_id}')
+		else:
+			return HttpResponseRedirect('/')
+
+
+def delete_project_file(request, project_id, file_id):
+	file = ProjectFile.objects.filter(id=file_id)
+	if len(file):
+		file = file[0]
+		if file.project.id == project_id:
+			file.delete()
+			return HttpResponseRedirect(f'/accounts/projects/{project_id}')
+	else:
+		return HttpResponseRedirect('/')

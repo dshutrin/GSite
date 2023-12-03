@@ -37,6 +37,9 @@ class Project(models.Model):
 			'color': self.category.color
 		}
 	
+	def get_privacy(self):
+		return {True: 'Публичный', False: 'Приватный'}[self.privacy_mode]
+	
 	def __str__(self):
 		return f'{self.title} ({self.user.username})'
 
